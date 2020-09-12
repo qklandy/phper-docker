@@ -1,0 +1,424 @@
+version: "3.8"
+services:
+  nginx:
+    build:
+      context: ./services/nginx
+      args:
+        NGINX_VERSION: ${NGINX_VERSION}
+        CONTAINER_PACKAGE_URL: ${CONTAINER_PACKAGE_URL}
+        NGINX_INSTALL_APPS: ${NGINX_INSTALL_APPS}
+    container_name: nginx
+    ports:
+      - "${NGINX_HTTP_HOST_PORT}:80"
+      - "${NGINX_HTTPS_HOST_PORT}:443"
+    volumes:
+      - ${SOURCE_DIR}:/www/:rw
+      - ${NGINX_SSL_CERTIFICATE_DIR}:/ssl:rw
+      - ${NGINX_CONFD_DIR}:/etc/nginx/conf.d/:rw
+      - ${NGINX_CONF_FILE}:/etc/nginx/nginx.conf:ro
+      - ${NGINX_FASTCGI_PHP_CONF}:/etc/nginx/fastcgi-php.conf:ro
+      - ${NGINX_FASTCGI_PARAMS}:/etc/nginx/fastcgi_params:ro
+      - ${NGINX_LOG_DIR}:/var/log/nginx/:rw
+    environment:
+      TZ: "$TZ"
+    restart: always
+    networks:
+      dwnet:
+        ipv4_address: 172.10.1.2
+
+  php70:
+    build:
+      context: ./services/php
+      args:
+        PHP_VERSION: php:${PHP70_VERSION}-fpm-alpine
+        CONTAINER_PACKAGE_URL: ${CONTAINER_PACKAGE_URL}
+        PHP_EXTENSIONS: ${PHP70_EXTENSIONS}
+        TZ: "$TZ"
+    container_name: php70
+    # expose:
+    #   - 9501
+    volumes:
+      - ${SOURCE_DIR}:/www/:rw
+      - ${PHP70_PHP_CONF_FILE}:/usr/local/etc/php/php.ini:ro
+      - ${PHP70_FPM_CONF_FILE}:/usr/local/etc/php-fpm.conf:rw
+      - ${PHP70_FPM_WWW_CONF_FILE}:/usr/local/etc/php-fpm.d/www.conf:rw
+      - ${PHP70_LOG_DIR}:/var/log/php
+      - ${DATA_DIR}/composer:/tmp/composer
+    privileged: true
+    restart: always
+    cap_add:
+      - SYS_PTRACE
+    networks:
+      dwnet:
+        ipv4_address: 172.10.1.70
+
+  # php71:
+  #   build:
+  #     context: ./services/php
+  #     args:
+  #       PHP_VERSION: php:${PHP71_VERSION}-fpm-alpine
+  #       CONTAINER_PACKAGE_URL: ${CONTAINER_PACKAGE_URL}
+  #       PHP_EXTENSIONS: ${PHP71_EXTENSIONS}
+  #       TZ: "$TZ"
+  #   container_name: php71
+  #   expose:
+  #     - 9502
+  #   volumes:
+  #     - ${SOURCE_DIR}:/www/:rw
+  #     - ${PHP71_PHP_CONF_FILE}:/usr/local/etc/php/php.ini:ro
+  #     - ${PHP71_FPM_CONF_FILE}:/usr/local/etc/php-fpm.d/www.conf:rw
+  #     - ${PHP71_LOG_DIR}:/var/log/php
+  #     - ${DATA_DIR}/composer:/tmp/composer
+  #   restart: always
+  #   cap_add:
+  #     - SYS_PTRACE
+  #   networks:
+  #     dwnet:
+          # ipv4_address: 172.10.1.71
+
+  php72:
+    build:
+      context: ./services/php
+      args:
+        PHP_VERSION: php:${PHP72_VERSION}-fpm-alpine
+        CONTAINER_PACKAGE_URL: ${CONTAINER_PACKAGE_URL}
+        PHP_EXTENSIONS: ${PHP72_EXTENSIONS}
+        TZ: "$TZ"
+    container_name: php72
+    # expose:
+    #   - 9572
+    volumes:
+      - ${SOURCE_DIR}:/www/:rw
+      - ${PHP72_PHP_CONF_FILE}:/usr/local/etc/php/php.ini:ro
+      - ${PHP72_FPM_CONF_FILE}:/usr/local/etc/php-fpm.conf:rw
+      - ${PHP72_FPM_WWW_CONF_FILE}:/usr/local/etc/php-fpm.d/www.conf:rw
+      - ${PHP72_ZZDOCKER_CONF_FILE}:/usr/local/etc/php-fpm.d/zz-docker.conf:rw
+      - ${PHP72_LOG_DIR}:/var/log/php
+      - ${DATA_DIR}/composer:/tmp/composer
+    restart: always
+    cap_add:
+      - SYS_PTRACE
+    networks:
+      dwnet:
+          ipv4_address: 172.10.1.72
+
+  php74:
+    build:
+      context: ./services/php
+      args:
+        PHP_VERSION: php:${PHP74_VERSION}-fpm-alpine
+        CONTAINER_PACKAGE_URL: ${CONTAINER_PACKAGE_URL}
+        PHP_EXTENSIONS: ${PHP74_EXTENSIONS}
+        TZ: "$TZ"
+    container_name: php74
+    # expose:
+    #   - 9004
+    #   - 9504
+    volumes:
+      - ${SOURCE_DIR}:/www/:rw
+      - ${PHP74_PHP_CONF_FILE}:/usr/local/etc/php/php.ini:ro
+      - ${PHP74_FPM_CONF_FILE}:/usr/local/etc/php-fpm.conf:rw
+      - ${PHP74_FPM_WWW_CONF_FILE}:/usr/local/etc/php-fpm.d/www.conf:rw
+      - ${PHP74_ZZDOCKER_CONF_FILE}:/usr/local/etc/php-fpm.d/zz-docker.conf:rw
+      - ${PHP74_LOG_DIR}:/var/log/php
+      - ${DATA_DIR}/composer:/tmp/composer
+    restart: always
+    cap_add:
+      - SYS_PTRACE
+    networks:
+      dwnet:
+          ipv4_address: 172.10.1.74
+
+  # php56:
+  #   build:
+  #     context: ./services/php
+  #     args:
+  #       PHP_VERSION: php:${PHP56_VERSION}-fpm-alpine
+  #       CONTAINER_PACKAGE_URL: ${CONTAINER_PACKAGE_URL}
+  #       PHP_EXTENSIONS: ${PHP56_EXTENSIONS}
+  #       TZ: "$TZ"
+  #   container_name: php56
+  #   expose:
+  #     - 9501
+  #   volumes:
+  #     - ${SOURCE_DIR}:/www/:rw
+  #     - ${PHP56_PHP_CONF_FILE}:/usr/local/etc/php/php.ini:ro
+  #     - ${PHP56_FPM_CONF_FILE}:/usr/local/etc/php-fpm.d/www.conf:rw
+  #     - ${PHP56_LOG_DIR}:/var/log/php
+  #     - ${DATA_DIR}/composer:/tmp/composer
+  #   restart: always
+  #   cap_add:
+  #     - SYS_PTRACE
+  #   networks:
+  #     dwnet:
+          # ipv4_address: 172.10.1.56
+
+  mysql80:
+    image: mysql:${MYSQL80_VERSION}
+    container_name: mysql80
+    ports:
+      - "${MYSQL80_HOST_PORT}:3306"
+    volumes:
+      - ${MYSQL80_CONF_FILE}:/etc/mysql/conf.d/mysql.cnf:ro
+      - ${DATA_DIR}/mysql:/var/lib/mysql/:rw
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "${MYSQL80_ROOT_PASSWORD}"
+      TZ: "$TZ"
+    networks:
+      dwnet:
+          ipv4_address: 172.10.1.4
+  
+  # mysql57:
+  #   image: mysql:${MYSQL57_VERSION}
+  #   container_name: mysql57
+  #   ports:
+  #     - "${MYSQL57_HOST_PORT}:3306"
+  #   volumes:
+  #     - ${MYSQL57_CONF_FILE}:/etc/mysql/conf.d/mysql.cnf:ro
+  #     - ${DATA_DIR}/mysql5:/var/lib/mysql/:rw
+  #   restart: always
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: "${MYSQL57_ROOT_PASSWORD}"
+  #     TZ: "$TZ"
+  #   networks:
+  #     dwnet:
+  #       ipv4_address: 172.10.1.4
+
+  openresty:
+    image:  openresty/openresty:${OPENRESTY_VERSION}
+    container_name: openresty
+    ports:
+       - "${OPENRESTY_HTTP_HOST_PORT}:80"
+       - "${OPENRESTY_HTTPS_HOST_PORT}:443"
+    volumes:
+       - ${SOURCE_DIR}:/www/:rw
+       - ${OPENRESTY_CONFD_DIR}:/etc/nginx/conf.d/:ro
+       - ${OPENRESTY_SSL_CERTIFICATE_DIR}:/ssl:rw
+       - ${OPENRESTY_CONF_FILE}:/usr/local/openresty/nginx/conf/nginx.conf:ro
+       - ${OPENRESTY_FASTCGI_PHP_CONF}:/usr/local/openresty/nginx/conf/fastcgi-php.conf:ro
+       - ${OPENRESTY_CONF_FASTCGIPARAMS_FILE}:/usr/local/openresty/nginx/conf/fastcgi_params:ro
+       - ${OPENRESTY_LOG_DIR}:/var/log/nginx/:rw
+    environment:
+      TZ: "$TZ"
+    networks:
+      dwnet:
+          ipv4_address: 172.10.1.5
+
+  redis:
+    image: redis:${REDIS_VERSION}
+    container_name: redis
+    ports:
+      - "${REDIS_HOST_PORT}:6379"
+    volumes:
+      - ${REDIS_CONF_FILE}:/etc/redis.conf:ro
+      - ${DATA_DIR}/redis:/data/:rw
+    restart: always
+    entrypoint: ["redis-server", "/etc/redis.conf"]
+    environment:
+      TZ: "$TZ"
+    networks:
+      dwnet:
+        ipv4_address: 172.10.1.6
+
+  # memcached:
+  #   image: memcached:${MEMCACHED_VERSION}
+  #   container_name: memcached
+  #   ports:
+  #     - "${MEMCACHED_HOST_PORT}:11211"
+  #   environment:
+  #      MEMCACHED_CACHE_SIZE: "${MEMCACHED_CACHE_SIZE}"
+  #   networks:
+  #     dwnet:
+          # ipv4_address: 172.10.1.7
+
+  rabbitmq:
+    image: rabbitmq:${RABBITMQ_VERSION}
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - "${RABBITMQ_HOST_PORT_C}:5672"
+      - "${RABBITMQ_HOST_PORT_S}:15672"
+    environment:
+       TZ: "$TZ"
+       RABBITMQ_DEFAULT_USER: "${RABBITMQ_DEFAULT_USER}"
+       RABBITMQ_DEFAULT_PASS: "${RABBITMQ_DEFAULT_PASS}"
+    networks:
+      dwnet:
+        ipv4_address: 172.10.1.8
+
+  # phpmyadmin:
+  #   image: phpmyadmin/phpmyadmin:latest
+  #   container_name: phpmyadmin
+  #   ports:
+  #     - "${PHPMYADMIN_HOST_PORT}:80"
+  #   volumes:
+  #     - ${PHPMYADMIN_USER_CONF_FILE}:/etc/phpmyadmin/config.user.inc.php:ro
+  #     - ${PHPMYADMIN_PHP_CONF_FILE}:/usr/local/etc/php/conf.d/php-phpmyadmin.ini:ro
+  #   environment:
+  #     - PMA_HOST=mysql
+  #     - PMA_PORT=3306
+  #     - TZ=$TZ
+  #   networks:
+  #     dwnet:
+          # ipv4_address: 172.10.1.9
+
+  # phpredisadmin:
+  #   image: erikdubbelboer/phpredisadmin:latest
+  #   container_name: phpredisadmin
+  #   ports:
+  #     - "${REDISMYADMIN_HOST_PORT}:80"
+  #   environment:
+  #     - REDIS_1_HOST=redis
+  #     - REDIS_1_PORT=6379
+  #     - TZ=$TZ
+  #   networks:
+  #     dwnet:
+  #       ipv4_address: 172.10.1.10
+
+  # mongodb:
+  #   image: mongo:${MONGODB_VERSION}
+  #   container_name: mongodb
+  #   environment:
+  #       MONGO_INITDB_ROOT_USERNAME: "${MONGODB_INITDB_ROOT_USERNAME}"
+  #       MONGO_INITDB_ROOT_PASSWORD: "${MONGODB_INITDB_ROOT_PASSWORD}"
+  #       TZ: "$TZ"
+  #   volumes:
+  #     - ${DATA_DIR}/mongo:/data/db:rw
+  #     - ${DATA_DIR}/mongo_key:/mongo:rw
+  #   ports:
+  #      - "${MONGODB_HOST_PORT}:27017"
+  #   command:
+  #      --auth
+  #   networks:
+  #     dwnet:
+  #       ipv4_address: 172.10.1.11
+
+  # adminmongo:
+  #   image: mrvautin/adminmongo
+  #   container_name: adminmongo
+  #   ports:
+  #     - "${ADMINMONGO_HOST_PORT}:1234"
+  #   environment:
+  #     - HOST=0.0.0.0
+  #     - DB_HOST=mongodb
+  #     - DB_PORT=27017
+  #   networks:
+  #     dwnet:
+  #         ipv4_address: 172.10.1.11
+
+  elasticsearch:
+    build:
+      context: ./services/elasticsearch
+      args:
+        ELASTICSEARCH_VERSION: ${ELASTICSEARCH_VERSION}
+        ELASTICSEARCH_PLUGINS: ${ELASTICSEARCH_PLUGINS}
+    container_name: elasticsearch
+    environment:
+      - TZ=$TZ
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    volumes:
+      - ${DATA_DIR}/esdata:/usr/share/elasticsearch/data
+      - ${ELASTICSEARCH_CONF_FILE}:/usr/share/elasticsearch/elasticsearch.yml
+    hostname: elasticsearch
+    restart: always
+    ports:
+      - "${ELASTICSEARCH_HOST_PORT_C}:9200"
+      - "${ELASTICSEARCH_HOST_PORT_S}:9300"
+    networks:
+      dwnet:
+        ipv4_address: 172.10.1.12
+
+  # kibana:
+  #   image: kibana:${KIBANA_VERSION}
+  #   container_name: kibana
+  #   environment:
+  #     TZ: "$TZ"
+  #     elasticsearch.hosts: http://elasticsearch:9200
+  #   hostname: kibana
+  #   depends_on:
+  #     - elasticsearch
+  #   restart: always
+  #   ports:
+  #     - "${KIBANA_HOST}:5601"
+  #   networks:
+  #     dwnet:
+  #       ipv4_address: 172.10.1.13
+
+  # logstash:
+  #   image: logstash:${LOGSTASH_VERSION}
+  #   container_name: logstash
+  #   hostname: logstash
+  #   restart: always
+  #   depends_on:
+  #     - elasticsearch
+  #   environment:
+  #     TZ: "$TZ"
+  #   ports:
+  #     - "${LOGSTASH_HOST_PORT_C}:9600"
+  #     - "${LOGSTASH_HOST_PORT_S}:5044"
+  #   networks:
+  #     dwnet:
+  #       ipv4_address: 172.10.1.14
+
+  etcd34:
+    image: 'bitnami/etcd:${ETCD34_VERSION}'
+    container_name: etcd34
+    environment:
+      - ALLOW_NONE_AUTHENTICATION=yes
+      - ETCD_ADVERTISE_CLIENT_URLS=http://172.10.1.15:2379
+    ports:
+      - ${ETCD34_API_PORT}:2379
+      - ${ETCD34_PEER_PORT}:2380
+    volumes:
+      - ${DATA_DIR}/etcd/34:/bitnami/etcd
+    networks:
+      dwnet:
+        ipv4_address: 172.10.1.15
+  
+  nsq120:
+    image: nsqio/nsq:v1.2.0
+    container_name: nsq120
+    restart: always
+    # ports:
+    #   - "4150:4150"
+    #   - "4151:4151"
+    #   - "4160:4160"
+    networks:
+      dwnet:
+        ipv4_address: 172.10.1.16
+
+  zookeeper36:
+    image: zookeeper:${ZK36_VERSION}
+    container_name: zookeeper36
+    restart: always
+    hostname: zoo1
+    ports:
+      - "${ZK36_PORT}:2181"
+    networks:
+      dwnet:
+        ipv4_address: 172.10.1.17
+  
+  kafka260:
+    build:
+      context: ./services/kafka260
+    container_name: kafka260
+    ports:
+      - "9092"
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: 172.10.1.18
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper36:2181
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      dwnet:
+        ipv4_address: 172.10.1.18
+
+networks:
+  dwnet:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.10.1.0/24
